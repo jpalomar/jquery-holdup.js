@@ -9,8 +9,8 @@
         $(selector).holdup('show')                 // will force elements to be loaded
 
         // these are exposed really for debugging purposes...
-        $(selector).holdup('observe')              // will add container ( window ) event bindings if bindings have not been added
-        $(selector).holdup('ignore')               // will remove container ( window ) event bindings
+        $(selector).holdup('observe')              // will add container ( window ) event listeners if listeners have not been added
+        $(selector).holdup('ignore')               // will remove container ( window ) event listeners
 
     HTML:
         // NOTE: based on DEFAULT options
