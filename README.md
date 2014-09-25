@@ -4,7 +4,9 @@ iHoldup
 yo, holdup -- another image lazy loader? yup.
 
 
-## JavaScript:
+## Usage Help
+
+### JavaScript:
 these are the open or commonly used api methods
 ```javascript
 $(selector).holdup({override_options})     // create instance
@@ -18,16 +20,16 @@ $(selector).holdup('observe')              // will add container ( window ) even
 $(selector).holdup('ignore')               // will remove container ( window ) event bindings
 ```
 
-## HTML:
-#### NOTE: based on DEFAULT options
+### HTML:
+##### NOTE: based on DEFAULT options
 src-retina path is for displays that support hi-dpi images
 ```html
 <img data-src="PATH_TO_IMG" data-src-retina="PATH_TO_RETINA_IMG" />
 <div data-src="PATH_TO_IMG" data-src-retina="PATH_TO_RETINA_IMG" ></div>
 ```
 
-## CSS:
-#### NOTE: based on DEFAULT options
+### CSS:
+##### NOTE: based on DEFAULT options
 ```css
 .heldup
 {
