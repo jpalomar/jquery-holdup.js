@@ -238,10 +238,8 @@
 
         // save reference to element
         that.$el = $(element)
-            // add base className
-            .addClass(these_options.baseClass)
-            // add waiting state className
-            .addClass(pending_classname)
+            // add base className & add waiting state className
+            .addClass(these_options.baseClass+' '+pending_classname)
             // and placeholder img
             .prop('src', these_options.placeholder)
             ;
@@ -294,7 +292,8 @@
         // unbind
         $el_scrollable
             .off(scroll_event_name)
-            .off(resize_event_name);
+            .off(resize_event_name)
+            ;
         // set flag
         is_initialized = false;
     };
