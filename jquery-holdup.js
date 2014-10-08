@@ -1,6 +1,8 @@
 
 /*!  jquery-holdup - */
 
+/* global define:false */
+
 /*  *** USAGE ***
     JavaScript:
         // these are the open or commonly used api methods
@@ -30,7 +32,22 @@
             rules ... rules
         }
 */
-;(function($)
+;( function ( factory )
+{
+    'use strict';
+
+    if ( typeof define === 'function' && define.amd )
+    {
+        // AMD. Register as an anonymous module.
+        define( ['jquery'], factory );
+    }
+    else
+    {
+        // Browser globals
+        factory( jQuery );
+    }
+}
+( function ( $ )
 {
     'use strict';
 
@@ -50,7 +67,7 @@
             var container_viewport_top = $container.scrollTop();
             return top + $el.height() >= container_viewport_top - threshold &&     // element bottom is within the viewport top
                 top <= container_viewport_top + $container.height() + threshold    // element top is within the viewport bottom
-            ;
+                ;
         };
 
         // PURPOSE: check if element is in horizontal viewport
@@ -61,19 +78,20 @@
             var container_viewport_left = $container.scrollLeft();
             return left <= container_viewport_left + $container.width() &&         // element left is within the viewport right
                 left + $el.width() >= container_viewport_left                      // element right is within the viewport left
-            ;
+                ;
         };
 
         // cache the element's coordinates on the page...
         var element_offset = $el.offset();
 
         return  is_element_in_vertical_view( element_offset.top ) &&
-                is_element_in_horizontal_view( element_offset.left );
+                is_element_in_horizontal_view( element_offset.left )
+                ;
     };
 
     // PURPOSE: see if there are any more images to load -- see if rendering needs to be run
     // @param evt : $(Event)
-    var do_render_view = function(evt)
+    var do_render_view = function( evt )
     {
         // don't fire unless its by a human
         if (evt.isTrigger)
@@ -95,12 +113,12 @@
         // or nothing at all
     };
 
-    var get_now = Date.now || function()
+    var do_get_now = Date.now || function()
     {
         return (new Date()).getTime();
     };
 
-    var do_bottlenecked_event = function(fn, delay, is_resize)
+    var do_bottlenecked_event = function( fn, delay, is_resize )
     {
         var that;                       // pointer for scoped context
         var args;                       // pointer for scoped arguments
@@ -114,12 +132,12 @@
         };
         var call_me_maybe = function()
         {
-            last_timestap = is_resize ? 0 : get_now();
+            last_timestap = is_resize ? 0 : do_get_now();
             do_call();
         };
         return function(/*arguments*/)
         {
-            var now = get_now();
+            var now = do_get_now();
             if (!last_timestap && is_resize)
             {
                 last_timestap = now;
@@ -149,7 +167,7 @@
     // @param $el : $(DOMElement)
     // @param options : { options }
     // return undefined
-    var do_load_image = function($el, options)
+    var do_load_image = function( $el, options )
     {
         var do_handle_error = function()
         {
@@ -192,7 +210,7 @@
         };
 
         // get the path to the img in an html data-* attr
-        var data_source_val = $el.data(options.srcAttr) || $el.data(default_attr_name);
+        var data_source_val = $el.data( options.srcAttr ) || $el.data( default_attr_name );
         var img;
 
         if (data_source_val)
@@ -230,7 +248,7 @@
     /* Yoholdup CONSTRUCTOR */
     // @param element : DOMElement
     // @param options : { options }
-    var Holdup = function(element, options)
+    var Holdup = function( element, options )
     {
         var that = this;
         // define this instance's set of options
@@ -319,7 +337,7 @@
     };
 
     // assign to {$.fn} namespace
-    $.fn.holdup = function(option)
+    $.fn.holdup = function( option )
     {
         return this.each(function()
         {
@@ -354,4 +372,6 @@
         return this;
     };
 
-})(jQuery);
+    return $.fn.holdup;
+
+}));
