@@ -185,27 +185,27 @@
         {
             // add error className
             $el
-                .removeClass(pending_classname + ' ' + options.successClass)
-                .addClass(options.errorClass)
+                .removeClass( pending_classname + ' ' + options.successClass )
+                .addClass( options.errorClass )
                 ;
 
-            // run error callback... no arguments or context...
-            if (options.onError)
+            // run error callback... with arguments and the selected context...
+            if ( options.onError )
             {
-                options.onError();
+                options.onError.apply( $el, arguments );
             }
         };
 
         var do_handle_sucess = function()
         {
             // NOTE: this logic allows usage on elements -- not just <img>
-            if ($el.is('img'))
+            if ( $el.is( 'img' ) )
             {
                 // set img.src property if element is an <img>
                 // set src prop and add success className
-                $el.prop('src', data_source_val)
-                    .removeClass(pending_classname + ' ' + options.errorClass)
-                    .addClass(options.successClass)
+                $el.prop( 'src', data_source_val )
+                    .removeClass( pending_classname + ' ' + options.errorClass )
+                    .addClass( options.successClass )
                     ;
             }
             // set background-image style tag if element is something else like a <div> or <a>
@@ -214,10 +214,10 @@
                 $el.css('background-image', 'url("' + data_source_val + '")');
             }
 
-            // run success callback... no arguments or context...
-            if (options.onSuccess)
+            // run success callback... with arguments and the selected context...
+            if ( options.onSuccess )
             {
-                options.onSuccess();
+                options.onSuccess.apply( $el, arguments );
             }
         };
 
@@ -225,7 +225,7 @@
         var data_source_val = $el.data( options.srcAttr ) || $el.data( default_attr_name );
         var img;
 
-        if (data_source_val)
+        if ( data_source_val )
         {
             // create element
             img = new Image();
