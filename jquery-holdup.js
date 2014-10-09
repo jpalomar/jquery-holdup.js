@@ -94,25 +94,29 @@
     var do_render_view = function( evt )
     {
         // don't fire unless its by a human
-        if (evt.isTrigger)
+        if ( evt.isTrigger )
         {
             return;
         }
-        // selects the imgs not loaded
-        var $imgs_not_loaded = $('.' + pending_classname);
-        // do the render method
-        if ($imgs_not_loaded.length)
+        // selects the imgs waiting to be loaded
+        var $imgs_not_loaded = $( '.' + pending_classname );
+
+        // if there are images needing to load
+        if ( $imgs_not_loaded.length )
         {
+            // do the render method
             $imgs_not_loaded.holdup('render');
         }
-        // or destroy the window events
-        else if (is_initialized)
+        // or if the plugin observe has been initialized
+        else if ( is_initialized )
         {
+            // remove the events from the window
             HoldupProto.ignore();
         }
         // or nothing at all
     };
 
+    // inspired by underscore's debounce and throttle routines
     var do_bottlenecked_event = function( fn, delay, is_resize )
     {
         var that;                       // pointer for scoped context
@@ -120,35 +124,48 @@
         var result;                     // pointer for returned value of function
         var timeout = null;             // window Timeout reference
         var last_timestap = 0;          // date int
+        // invoked function routine with flag cleanup
         var do_call = function()
         {
+            // store returned values from invoked function
             result = fn.apply(that, args);
+            // reset flags
             timeout = that = args = null;
         };
+        // out-of scope routine for the scroll function routine while setting flags
         var call_me_maybe = function()
         {
+            // set compared flags
             last_timestap = is_resize ? 0 : $.now();
+            // invoke the function
             do_call();
         };
-        return function(/*arguments*/)
+        return function bottle_neck(/*arguments*/)
         {
+            // set current timestamp
             var now = $.now();
-            if (!last_timestap && is_resize)
+            if ( ! last_timestap && is_resize )
             {
+                // set current timestamp
                 last_timestap = now;
             }
-            var remaining = delay - (now - last_timestap);
+            // get time left
+            var remaining = delay - ( now - last_timestap );
+            // set scope references
             that = this;
             args = arguments;
-            if (remaining <= 0)
+
+            // do now
+            if ( remaining <= 0 )
             {
-                clearTimeout(timeout);
+                clearTimeout( timeout );
                 last_timestap = now;
                 do_call();
             }
-            else if (!timeout && !is_resize)
+            // do later
+            else if ( !timeout && !is_resize )
             {
-                timeout = setTimeout(call_me_maybe, remaining);
+                timeout = setTimeout( call_me_maybe, remaining );
             }
             return result;
         };
@@ -231,7 +248,7 @@
     // the private scroll event namespace
     var scroll_event_name = 'scroll.holdup';
     // the additional className to define image load has successfully completed -- static to keep render routine consistent
-    var pending_classname = 'holdup-notloaded';
+    var pending_classname = 'holdup-pending';
     // 'original' is the default to support lazyload's default markup expectations
     var default_attr_name = 'src';
     // boolean to determine if plugin has been initialized for plugin window event logic
