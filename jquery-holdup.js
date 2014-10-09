@@ -113,11 +113,6 @@
         // or nothing at all
     };
 
-    var do_get_now = Date.now || function()
-    {
-        return (new Date()).getTime();
-    };
-
     var do_bottlenecked_event = function( fn, delay, is_resize )
     {
         var that;                       // pointer for scoped context
@@ -132,12 +127,12 @@
         };
         var call_me_maybe = function()
         {
-            last_timestap = is_resize ? 0 : do_get_now();
+            last_timestap = is_resize ? 0 : $.now();
             do_call();
         };
         return function(/*arguments*/)
         {
-            var now = do_get_now();
+            var now = $.now();
             if (!last_timestap && is_resize)
             {
                 last_timestap = now;
