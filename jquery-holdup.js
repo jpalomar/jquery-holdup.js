@@ -264,14 +264,14 @@
     {
         var that = this;
         // define this instance's set of options
-        var these_options = that.options = $.extend({}, Holdup.DEFAULTS, options);
+        var these_options = that.options = $.extend( {}, Holdup.DEFAULTS, options );
 
         // save reference to element
-        that.$el = $(element)
+        that.$el = $( element )
             // add base className & add waiting state className
-            .addClass(these_options.baseClass+' '+pending_classname)
+            .addClass( these_options.baseClass+' '+pending_classname )
             // and placeholder img
-            .prop('src', these_options.placeholder)
+            .prop( 'src', these_options.placeholder )
             ;
 
         // set property
@@ -353,13 +353,13 @@
     {
         return this.each(function()
         {
-            var $this = $(this);
-            var data = $this.data('holdup');
+            var $this = $( this );
+            var data = $this.data( 'holdup' );
 
             // create new instance
-            if (!data)
+            if ( !data )
             {
-                $this.data('holdup', (data = new Holdup(this, typeof option === 'object' && option)));
+                $this.data( 'holdup', ( data = new Holdup( this, typeof option === 'object' && option ) ) );
             }
             // execute instance method
             else if (typeof option === 'string' && data[option] )
@@ -375,12 +375,12 @@
     /*
         // Holdup NO CONFLICT to reassign namespace
         **** USAGE
-        var original_holdup = $.fn.Holdup.noConflict()      // return $.fn.holdup to previously assigned value
+        var original_holdup = $.fn.holdup.noConflict()      // return $.fn.holdup to previously assigned value
         $.fn.someOtherNamespace = original_holdup           // give $().someOtherNamespace the yoholdup functionality
     */
     $.fn.holdup.noConflict = function()
     {
-        $.fn.Holdup = old;
+        $.fn.holdup = old;
         return this;
     };
 
