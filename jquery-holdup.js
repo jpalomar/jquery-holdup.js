@@ -1,6 +1,8 @@
 
 /*!  jquery-holdup - */
 
+/* global define:false */
+
 /*  *** USAGE ***
     JavaScript:
         // these are the open or commonly used api methods
@@ -30,7 +32,22 @@
             rules ... rules
         }
 */
-;(function($)
+;( function ( factory )
+{
+    'use strict';
+
+    if ( typeof define === 'function' && define.amd )
+    {
+        // AMD. Register as an anonymous module.
+        define( ['jquery'], factory );
+    }
+    else
+    {
+        // Browser globals
+        factory( jQuery );
+    }
+}
+( function ( $ )
 {
     'use strict';
 
@@ -50,7 +67,7 @@
             var container_viewport_top = $container.scrollTop();
             return top + $el.height() >= container_viewport_top - threshold &&     // element bottom is within the viewport top
                 top <= container_viewport_top + $container.height() + threshold    // element top is within the viewport bottom
-            ;
+                ;
         };
 
         // PURPOSE: check if element is in horizontal viewport
@@ -61,81 +78,94 @@
             var container_viewport_left = $container.scrollLeft();
             return left <= container_viewport_left + $container.width() &&         // element left is within the viewport right
                 left + $el.width() >= container_viewport_left                      // element right is within the viewport left
-            ;
+                ;
         };
 
         // cache the element's coordinates on the page...
         var element_offset = $el.offset();
 
         return  is_element_in_vertical_view( element_offset.top ) &&
-                is_element_in_horizontal_view( element_offset.left );
+                is_element_in_horizontal_view( element_offset.left )
+                ;
     };
 
     // PURPOSE: see if there are any more images to load -- see if rendering needs to be run
     // @param evt : $(Event)
-    var do_render_view = function(evt)
+    var do_render_view = function( evt )
     {
         // don't fire unless its by a human
-        if (evt.isTrigger)
+        if ( evt.isTrigger )
         {
             return;
         }
-        // selects the imgs not loaded
-        var $imgs_not_loaded = $('.' + pending_classname);
-        // do the render method
-        if ($imgs_not_loaded.length)
+        // selects the imgs waiting to be loaded
+        var $imgs_not_loaded = $( '.' + pending_classname );
+
+        // if there are images needing to load
+        if ( $imgs_not_loaded.length )
         {
+            // do the render method
             $imgs_not_loaded.holdup('render');
         }
-        // or destroy the window events
-        else if (is_initialized)
+        // or if the plugin observe has been initialized
+        else if ( is_initialized )
         {
+            // remove the events from the window
             HoldupProto.ignore();
         }
         // or nothing at all
     };
 
-    var get_now = Date.now || function()
-    {
-        return (new Date()).getTime();
-    };
-
-    var do_bottlenecked_event = function(fn, delay, is_resize)
+    // inspired by underscore's debounce and throttle routines
+    var do_bottlenecked_event = function( fn, delay, is_resize )
     {
         var that;                       // pointer for scoped context
         var args;                       // pointer for scoped arguments
         var result;                     // pointer for returned value of function
         var timeout = null;             // window Timeout reference
         var last_timestap = 0;          // date int
+        // invoked function routine with flag cleanup
         var do_call = function()
         {
+            // store returned values from invoked function
             result = fn.apply(that, args);
+            // reset flags
             timeout = that = args = null;
         };
+        // out-of scope routine for the scroll function routine while setting flags
         var call_me_maybe = function()
         {
-            last_timestap = is_resize ? 0 : get_now();
+            // set compared flags
+            last_timestap = is_resize ? 0 : $.now();
+            // invoke the function
             do_call();
         };
-        return function(/*arguments*/)
+        return function bottle_neck(/*arguments*/)
         {
-            var now = get_now();
-            if (!last_timestap && is_resize)
+            // set current timestamp
+            var now = $.now();
+            if ( ! last_timestap && is_resize )
             {
+                // set current timestamp
                 last_timestap = now;
             }
-            var remaining = delay - (now - last_timestap);
+            // get time left
+            var remaining = delay - ( now - last_timestap );
+            // set scope references
             that = this;
             args = arguments;
-            if (remaining <= 0)
+
+            // do now
+            if ( remaining <= 0 )
             {
-                clearTimeout(timeout);
+                clearTimeout( timeout );
                 last_timestap = now;
                 do_call();
             }
-            else if (!timeout && !is_resize)
+            // do later
+            else if ( !timeout && !is_resize )
             {
-                timeout = setTimeout(call_me_maybe, remaining);
+                timeout = setTimeout( call_me_maybe, remaining );
             }
             return result;
         };
@@ -149,33 +179,33 @@
     // @param $el : $(DOMElement)
     // @param options : { options }
     // return undefined
-    var do_load_image = function($el, options)
+    var do_load_image = function( $el, options )
     {
         var do_handle_error = function()
         {
             // add error className
             $el
-                .removeClass(pending_classname + ' ' + options.successClass)
-                .addClass(options.errorClass)
+                .removeClass( pending_classname + ' ' + options.successClass )
+                .addClass( options.errorClass )
                 ;
 
-            // run error callback... no arguments or context...
-            if (options.onError)
+            // run error callback... with arguments and the selected context...
+            if ( options.onError )
             {
-                options.onError();
+                options.onError.apply( $el, arguments );
             }
         };
 
         var do_handle_sucess = function()
         {
             // NOTE: this logic allows usage on elements -- not just <img>
-            if ($el.is('img'))
+            if ( $el.is( 'img' ) )
             {
                 // set img.src property if element is an <img>
                 // set src prop and add success className
-                $el.prop('src', data_source_val)
-                    .removeClass(pending_classname + ' ' + options.errorClass)
-                    .addClass(options.successClass)
+                $el.prop( 'src', data_source_val )
+                    .removeClass( pending_classname + ' ' + options.errorClass )
+                    .addClass( options.successClass )
                     ;
             }
             // set background-image style tag if element is something else like a <div> or <a>
@@ -184,18 +214,18 @@
                 $el.css('background-image', 'url("' + data_source_val + '")');
             }
 
-            // run success callback... no arguments or context...
-            if (options.onSuccess)
+            // run success callback... with arguments and the selected context...
+            if ( options.onSuccess )
             {
-                options.onSuccess();
+                options.onSuccess.apply( $el, arguments );
             }
         };
 
         // get the path to the img in an html data-* attr
-        var data_source_val = $el.data(options.srcAttr) || $el.data(default_attr_name);
+        var data_source_val = $el.data( options.srcAttr ) || $el.data( default_attr_name );
         var img;
 
-        if (data_source_val)
+        if ( data_source_val )
         {
             // create element
             img = new Image();
@@ -218,7 +248,7 @@
     // the private scroll event namespace
     var scroll_event_name = 'scroll.holdup';
     // the additional className to define image load has successfully completed -- static to keep render routine consistent
-    var pending_classname = 'holdup-notloaded';
+    var pending_classname = 'holdup-pending';
     // 'original' is the default to support lazyload's default markup expectations
     var default_attr_name = 'src';
     // boolean to determine if plugin has been initialized for plugin window event logic
@@ -230,20 +260,18 @@
     /* Yoholdup CONSTRUCTOR */
     // @param element : DOMElement
     // @param options : { options }
-    var Holdup = function(element, options)
+    var Holdup = function( element, options )
     {
         var that = this;
         // define this instance's set of options
-        var these_options = that.options = $.extend({}, Holdup.DEFAULTS, options);
+        var these_options = that.options = $.extend( {}, Holdup.DEFAULTS, options );
 
         // save reference to element
-        that.$el = $(element)
-            // add base className
-            .addClass(these_options.baseClass)
-            // add waiting state className
-            .addClass(pending_classname)
+        that.$el = $( element )
+            // add base className & add waiting state className
+            .addClass( these_options.baseClass+' '+pending_classname )
             // and placeholder img
-            .prop('src', these_options.placeholder)
+            .prop( 'src', these_options.placeholder )
             ;
 
         // set property
@@ -294,7 +322,8 @@
         // unbind
         $el_scrollable
             .off(scroll_event_name)
-            .off(resize_event_name);
+            .off(resize_event_name)
+            ;
         // set flag
         is_initialized = false;
     };
@@ -320,17 +349,17 @@
     };
 
     // assign to {$.fn} namespace
-    $.fn.holdup = function(option)
+    $.fn.holdup = function( option )
     {
         return this.each(function()
         {
-            var $this = $(this);
-            var data = $this.data('holdup');
+            var $this = $( this );
+            var data = $this.data( 'holdup' );
 
             // create new instance
-            if (!data)
+            if ( !data )
             {
-                $this.data('holdup', (data = new Holdup(this, typeof option === 'object' && option)));
+                $this.data( 'holdup', ( data = new Holdup( this, typeof option === 'object' && option ) ) );
             }
             // execute instance method
             else if (typeof option === 'string' && data[option] )
@@ -346,13 +375,15 @@
     /*
         // Holdup NO CONFLICT to reassign namespace
         **** USAGE
-        var original_holdup = $.fn.Holdup.noConflict()      // return $.fn.holdup to previously assigned value
+        var original_holdup = $.fn.holdup.noConflict()      // return $.fn.holdup to previously assigned value
         $.fn.someOtherNamespace = original_holdup           // give $().someOtherNamespace the yoholdup functionality
     */
     $.fn.holdup.noConflict = function()
     {
-        $.fn.Holdup = old;
+        $.fn.holdup = old;
         return this;
     };
 
-})(jQuery);
+    return $.fn.holdup;
+
+}));

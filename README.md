@@ -1,4 +1,4 @@
-iHoldup
+holdup
 =======
 
 yo, holdup -- another image lazy loader? yup.
