@@ -257,7 +257,7 @@
     // reference for holdup jQuery PLUGIN
     var old = $.fn.holdup;
 
-    /* Yoholdup CONSTRUCTOR */
+    /* Holdup CONSTRUCTOR */
     // @param element : DOMElement
     // @param options : { options }
     var Holdup = function( element, options )
@@ -361,8 +361,9 @@
             {
                 $this.data( 'holdup', ( data = new Holdup( this, typeof option === 'object' && option ) ) );
             }
+
             // execute instance method
-            else if (typeof option === 'string' && data[option] )
+            if ( typeof option === 'string' && data[option] )
             {
                 data[option]();
             }
