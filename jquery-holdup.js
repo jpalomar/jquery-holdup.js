@@ -355,15 +355,16 @@
         {
             var $this = $( this );
             var data = $this.data( 'holdup' );
+            var type = typeof option;
 
             // create new instance
             if ( !data )
             {
-                $this.data( 'holdup', ( data = new Holdup( this, typeof option === 'object' && option ) ) );
+                $this.data( 'holdup', ( data = new Holdup( this, type === 'object' && option ) ) );
             }
 
             // execute instance method
-            if ( typeof option === 'string' && data[option] )
+            if ( type === 'string' && data[option] )
             {
                 data[option]();
             }
