@@ -1,6 +1,8 @@
 
 /*!  jquery-holdup - */
 
+/* global define:false */
+
 /*  *** USAGE ***
     JavaScript:
         // these are the open or commonly used api methods
