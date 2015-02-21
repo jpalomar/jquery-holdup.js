@@ -33,8 +33,7 @@
         }
 */
 ;( function ( factory )
-{
-    'use strict';
+{   'use strict';
 
     if ( typeof define === 'function' && define.amd )
     {
@@ -44,12 +43,11 @@
     else
     {
         // Browser globals
-        factory( jQuery );
+        factory( window.jQuery );
     }
 }
 ( function ( $ )
-{
-    'use strict';
+{   'use strict';
 
     /* HELPER FUNCTIONS */
     // PURPOSE: check if element is in view to display
