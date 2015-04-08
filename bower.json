@@ -1,0 +1,32 @@
+{
+  "name": "jquery-holdup.js",
+  "version": "0.2.0",
+  "homepage": "https://github.com/jpalomar/jquery-holdup.js",
+  "authors": [
+    "JR <jr@macremefraiche.com>"
+  ],
+  "description": "yo, holdup -- another image lazy loader? yup.",
+  "main": [
+    "jquery-holdup.js",
+    "jquery-holdup.css"
+  ],
+  "keywords": [
+    "image",
+    "lazy",
+    "load",
+    "jquery",
+    "plugin"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "demo",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": ">= 1.9.0"
+  }
+}
