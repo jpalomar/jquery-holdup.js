@@ -1,7 +1,15 @@
-
-.img-holdup
-{
-	min-width:100%;
-	max-width:100%;
-	max-height:250px;
+body {
+    visibility: hidden;
+    opacity: 0;
+    webkit-transition: opacity .3s ease-in;
+    transition: opacity .3s ease-in;
+}
+body.is-ready {
+    visibility: visible;
+    opacity: 1;
+}
+.img-holdup {
+    min-width: 100%;
+    max-width: 100%;
+    max-height: 250px;
 }

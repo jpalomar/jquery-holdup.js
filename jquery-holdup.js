@@ -33,8 +33,7 @@
         }
 */
 ;( function ( factory )
-{
-    'use strict';
+{   'use strict';
 
     if ( typeof define === 'function' && define.amd )
     {
@@ -44,12 +43,11 @@
     else
     {
         // Browser globals
-        factory( jQuery );
+        factory( window.jQuery );
     }
 }
 ( function ( $ )
-{
-    'use strict';
+{   'use strict';
 
     /* HELPER FUNCTIONS */
     // PURPOSE: check if element is in view to display
@@ -115,65 +113,6 @@
         }
         // or nothing at all
     };
-
-    // inspired by underscore's debounce and throttle routines
-    var do_bottlenecked_event = function( fn, delay, is_resize )
-    {
-        var that;                       // pointer for scoped context
-        var args;                       // pointer for scoped arguments
-        var result;                     // pointer for returned value of function
-        var timeout = null;             // window Timeout reference
-        var last_timestap = 0;          // date int
-        // invoked function routine with flag cleanup
-        var do_call = function()
-        {
-            // store returned values from invoked function
-            result = fn.apply(that, args);
-            // reset flags
-            timeout = that = args = null;
-        };
-        // out-of scope routine for the scroll function routine while setting flags
-        var call_me_maybe = function()
-        {
-            // set compared flags
-            last_timestap = is_resize ? 0 : $.now();
-            // invoke the function
-            do_call();
-        };
-        return function bottle_neck(/*arguments*/)
-        {
-            // set current timestamp
-            var now = $.now();
-            if ( ! last_timestap && is_resize )
-            {
-                // set current timestamp
-                last_timestap = now;
-            }
-            // get time left
-            var remaining = delay - ( now - last_timestap );
-            // set scope references
-            that = this;
-            args = arguments;
-
-            // do now
-            if ( remaining <= 0 )
-            {
-                clearTimeout( timeout );
-                last_timestap = now;
-                do_call();
-            }
-            // do later
-            else if ( !timeout && !is_resize )
-            {
-                timeout = setTimeout( call_me_maybe, remaining );
-            }
-            return result;
-        };
-    };
-
-    // wrap deferments of invocation around render function
-    var do_scroll_browser_event = do_bottlenecked_event(do_render_view, 300);
-    var do_resize_browser_event = do_bottlenecked_event(do_render_view, 250, true);
 
     // PURPOSE: load image and handle error and fail events
     // @param $el : $(DOMElement)
@@ -241,7 +180,73 @@
         }
     };
 
-    // constants
+    // inspired by underscore's debounce and throttle routines
+    var get_bottlenecked_event = function( fn, delay, is_resize )
+    {
+        var that;                       // pointer for scoped context
+        var args;                       // pointer for scoped arguments
+        var result;                     // pointer for returned value of function
+        var timeout = null;             // window Timeout reference
+        var last_timestap = 0;          // date int
+        // invoked function routine with flag cleanup
+        var do_the_callback = function()
+        {
+            // store returned values from invoked function
+            result = fn.apply(that, args);
+            // reset flags
+            timeout = that = args = null;
+        };
+        // out-of scope routine for the scroll function routine while setting flags
+        var call_me_maybe = function()
+        {
+            // set compared flags
+            last_timestap = is_resize ? 0 : $.now();
+            // invoke the function
+            do_the_callback();
+        };
+        return function bottle_neck(/*arguments*/)
+        {
+            // set current timestamp
+            var now = $.now();
+            var remaining;
+
+            if ( ! last_timestap && is_resize )
+            {
+                // set current timestamp
+                last_timestap = now;
+            }
+            // get time left
+            remaining = delay - ( now - last_timestap );
+            // set scope references
+            that = this;
+            args = arguments;
+
+            // do now
+            if ( remaining <= 0 )
+            {
+                clearTimeout( timeout );
+                last_timestap = now;
+                do_the_callback();
+            }
+            // do later
+            else if ( !timeout && !is_resize )
+            {
+                timeout = setTimeout( call_me_maybe, remaining );
+            }
+            return result;
+        };
+    };
+
+    // wrap deferments of invocation around render function
+    var get_scroll_browser_event = function( timer ){
+        return get_bottlenecked_event( do_render_view, timer );
+    };
+
+    var get_resize_browser_event = function( timer ){
+        return get_bottlenecked_event( do_render_view, timer, true );
+    };
+
+    // plugin constants
     var $el_scrollable = $(window);
     // the private resize event namespace
     var resize_event_name = 'resize.holdup';
@@ -304,12 +309,12 @@
     HoldupProto.observe = function()
     {
         // avoids binding events too much
-        if (!is_initialized)
+        if ( !is_initialized )
         {
             // bind events
             $el_scrollable
-                .on(scroll_event_name, do_scroll_browser_event)
-                .on(resize_event_name, do_resize_browser_event)
+                .on( scroll_event_name, get_scroll_browser_event( this.options.timerScroll ) )
+                .on( resize_event_name, get_resize_browser_event( this.options.timerResize ) )
                 ;
             // set flag
             is_initialized = true;
@@ -321,8 +326,8 @@
     {
         // unbind
         $el_scrollable
-            .off(scroll_event_name)
-            .off(resize_event_name)
+            .off( scroll_event_name )
+            .off( resize_event_name )
             ;
         // set flag
         is_initialized = false;
@@ -330,20 +335,28 @@
 
     // define initial default options
     Holdup.DEFAULTS = {
+
         // the initialized className to define image load has been bound to element
         'baseClass': 'heldup',
         // the additional className to define image load has unsuccessfully completed
         'errorClass': 'heldup-error',
         // the additional className to define image load has successfully completed
         'successClass': 'heldup-success',
-        // define callbacks to null
-        // will execute when user adds option
+
+        // set a timer for window events
+        // NOTE: the first value wins on invocation -- until all lazy loaded images have been loaded and then re-invoked
+        'timerScroll': 300,
+        'timerResize': 250,
+
+        // default callbacks to something falsy -- will execute when user adds option
         'onSuccess': null,
         'onError': null,
+
         // default placeholder for when the images are not loaded which is a 1x1 transparent gif
         'placeholder': 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-        // define slack of logic determining what' in the viewport
+        // define slack of logic determining what is in the viewport
         'threshold': 0,
+
         // define the data attr to source the actual image -- if retina is found it toggles the default attr name
         'srcAttr': window.devicePixelRatio > 1 ? 'src-retina' : default_attr_name
     };
@@ -351,19 +364,20 @@
     // assign to {$.fn} namespace
     $.fn.holdup = function( option )
     {
-        return this.each(function()
+        return this.each(function do_init()
         {
             var $this = $( this );
             var data = $this.data( 'holdup' );
+            var type = typeof option;
 
             // create new instance
             if ( !data )
             {
-                $this.data( 'holdup', ( data = new Holdup( this, typeof option === 'object' && option ) ) );
+                $this.data( 'holdup', ( data = new Holdup( this, type === 'object' && option ) ) );
             }
 
             // execute instance method
-            if ( typeof option === 'string' && data[option] )
+            if ( type === 'string' && data[option] )
             {
                 data[option]();
             }
@@ -385,6 +399,7 @@
         return this;
     };
 
+    // return back the plugin namespace
     return $.fn.holdup;
 
 }));
