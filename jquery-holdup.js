@@ -55,29 +55,29 @@
     // @param $el : $(DOMElement)
     // @param threshold : Number
     // return bool
-    var is_element_in_view = function( $container, $el, threshold )
+    function is_element_in_view( $container, $el, threshold )
     {
         // PURPOSE: check if element is in vertical viewport
         // @param el_top : Number
         // return bool
-        var is_element_in_vertical_view = function( top )
+        function is_element_in_vertical_view( top )
         {
             var container_viewport_top = $container.scrollTop();
             return top + $el.height() >= container_viewport_top - threshold &&     // element bottom is within the viewport top
                 top <= container_viewport_top + $container.height() + threshold    // element top is within the viewport bottom
                 ;
-        };
+        }
 
         // PURPOSE: check if element is in horizontal viewport
         // @param el_left : Number
         // return bool
-        var is_element_in_horizontal_view = function( left )
+        function is_element_in_horizontal_view( left )
         {
             var container_viewport_left = $container.scrollLeft();
             return left <= container_viewport_left + $container.width() &&         // element left is within the viewport right
                 left + $el.width() >= container_viewport_left                      // element right is within the viewport left
                 ;
-        };
+        }
 
         // cache the element's coordinates on the page...
         var element_offset = $el.offset();
@@ -85,11 +85,11 @@
         return  is_element_in_vertical_view( element_offset.top ) &&
                 is_element_in_horizontal_view( element_offset.left )
                 ;
-    };
+    }
 
     // PURPOSE: see if there are any more images to load -- see if rendering needs to be run
     // @param evt : $(Event)
-    var do_render_view = function( evt )
+    function do_render_view( evt )
     {
         // don't fire unless its by a human
         if ( evt.isTrigger )
@@ -112,15 +112,15 @@
             HoldupProto.ignore();
         }
         // or nothing at all
-    };
+    }
 
     // PURPOSE: load image and handle error and fail events
     // @param $el : $(DOMElement)
     // @param options : { options }
     // return undefined
-    var do_load_image = function( $el, options )
+    function do_load_image( $el, options )
     {
-        var do_handle_error = function()
+        function do_handle_error()
         {
             // add error className
             $el
@@ -133,16 +133,17 @@
             {
                 options.onError.apply( $el, arguments );
             }
-        };
+        }
 
-        var do_handle_sucess = function()
+        function do_handle_sucess()
         {
             // NOTE: this logic allows usage on elements -- not just <img>
             if ( $el.is( 'img' ) )
             {
                 // set img.src property if element is an <img>
                 // set src prop and add success className
-                $el.prop( 'src', data_source_val )
+                $el
+                    .prop( 'src', data_source_val )
                     .removeClass( pending_classname + ' ' + options.errorClass )
                     .addClass( options.successClass )
                     ;
@@ -158,7 +159,7 @@
             {
                 options.onSuccess.apply( $el, arguments );
             }
-        };
+        }
 
         // get the path to the img in an html data-* attr
         var data_source_val = $el.data( options.srcAttr ) || $el.data( default_attr_name );
@@ -178,32 +179,34 @@
         {
             do_handle_error();
         }
-    };
+    }
 
     // inspired by underscore's debounce and throttle routines
-    var get_bottlenecked_event = function( fn, delay, is_resize )
+    function get_bottlenecked_event( fn, delay, is_resize )
     {
-        var that;                       // pointer for scoped context
-        var args;                       // pointer for scoped arguments
-        var result;                     // pointer for returned value of function
-        var timeout = null;             // window Timeout reference
-        var last_timestap = 0;          // date int
         // invoked function routine with flag cleanup
-        var do_the_callback = function()
+        function do_the_callback()
         {
             // store returned values from invoked function
             result = fn.apply(that, args);
             // reset flags
             timeout = that = args = null;
-        };
+        }
         // out-of scope routine for the scroll function routine while setting flags
-        var call_me_maybe = function()
+        function call_me_maybe()
         {
             // set compared flags
             last_timestap = is_resize ? 0 : $.now();
             // invoke the function
             do_the_callback();
-        };
+        }
+
+        var that;                       // pointer for scoped context
+        var args;                       // pointer for scoped arguments
+        var result;                     // pointer for returned value of function
+        var timeout = null;             // window Timeout reference
+        var last_timestap = 0;          // date int
+
         return function bottle_neck(/*arguments*/)
         {
             // set current timestamp
@@ -235,16 +238,16 @@
             }
             return result;
         };
-    };
+    }
 
     // wrap deferments of invocation around render function
-    var get_scroll_browser_event = function( timer ){
+    function get_scroll_browser_event( timer ){
         return get_bottlenecked_event( do_render_view, timer );
-    };
+    }
 
-    var get_resize_browser_event = function( timer ){
+    function get_resize_browser_event( timer ){
         return get_bottlenecked_event( do_render_view, timer, true );
-    };
+    }
 
     // plugin constants
     var $el_scrollable = $(window);
