@@ -3,7 +3,10 @@
 
 /* global define:false */
 
-/*  *** USAGE ***
+/*=============================
+=            USAGE            =
+=============================*/
+/*
     JavaScript:
         // these are the open or commonly used api methods
         $(selector).holdup({override_options})     // create instance
@@ -32,6 +35,8 @@
             rules ... rules
         }
 */
+/*-----  End of USAGE  ------*/
+
 ;( function ( factory )
 {   'use strict';
 
@@ -62,10 +67,10 @@
         // return bool
         function is_element_in_vertical_view( top )
         {
-            var container_viewport_top = $container.scrollTop();
-            return top + $el.height() >= container_viewport_top - threshold &&     // element bottom is within the viewport top
-                top <= container_viewport_top + $container.height() + threshold    // element top is within the viewport bottom
-                ;
+            var container_viewport_top = $container.scrollTop( );
+            return top + $el.height( ) >= container_viewport_top - threshold && // element bottom is within the viewport top
+                top <= container_viewport_top + $container.height( ) + threshold // element top is within the viewport bottom
+            ;
         }
 
         // PURPOSE: check if element is in horizontal viewport
@@ -73,16 +78,16 @@
         // return bool
         function is_element_in_horizontal_view( left )
         {
-            var container_viewport_left = $container.scrollLeft();
-            return left <= container_viewport_left + $container.width() &&         // element left is within the viewport right
-                left + $el.width() >= container_viewport_left                      // element right is within the viewport left
-                ;
+            var container_viewport_left = $container.scrollLeft( );
+            return left <= container_viewport_left + $container.width( ) && // element left is within the viewport right
+                left + $el.width( ) >= container_viewport_left // element right is within the viewport left
+            ;
         }
 
         // cache the element's coordinates on the page...
-        var element_offset = $el.offset();
+        var element_offset = $el.offset( );
 
-        return  is_element_in_vertical_view( element_offset.top ) &&
+        return is_element_in_vertical_view( element_offset.top ) &&
                 is_element_in_horizontal_view( element_offset.left )
                 ;
     }
@@ -103,13 +108,13 @@
         if ( $imgs_not_loaded.length )
         {
             // do the render method
-            $imgs_not_loaded.holdup('render');
+            $imgs_not_loaded.holdup( 'render' );
         }
         // or if the plugin observe has been initialized
         else if ( is_initialized )
         {
             // remove the events from the window
-            HoldupProto.ignore();
+            HoldupProto.ignore( );
         }
         // or nothing at all
     }
@@ -120,7 +125,7 @@
     // return undefined
     function do_load_image( $el, options )
     {
-        function do_handle_error()
+        function do_handle_error( )
         {
             // add error className
             $el
@@ -135,7 +140,7 @@
             }
         }
 
-        function do_handle_sucess()
+        function do_handle_sucess( )
         {
             // NOTE: this logic allows usage on elements -- not just <img>
             if ( $el.is( 'img' ) )
@@ -151,7 +156,7 @@
             // set background-image style tag if element is something else like a <div> or <a>
             else
             {
-                $el.css('background-image', 'url("' + data_source_val + '")');
+                $el.css( 'background-image', 'url("' + data_source_val + '")' );
             }
 
             // run success callback... with arguments and the selected context...
@@ -168,7 +173,7 @@
         if ( data_source_val )
         {
             // create element
-            img = new Image();
+            img = new Image( );
             // set events
             img.onerror = do_handle_error;
             img.onload = do_handle_sucess;
@@ -177,7 +182,7 @@
         }
         else
         {
-            do_handle_error();
+            do_handle_error( );
         }
     }
 
@@ -185,35 +190,36 @@
     function get_bottlenecked_event( fn, delay, is_resize )
     {
         // invoked function routine with flag cleanup
-        function do_the_callback()
+        function do_the_callback( )
         {
             // store returned values from invoked function
-            result = fn.apply(that, args);
+            result = fn.apply( that, args );
             // reset flags
             timeout = that = args = null;
         }
         // out-of scope routine for the scroll function routine while setting flags
-        function call_me_maybe()
+        function call_me_maybe( )
         {
             // set compared flags
-            last_timestap = is_resize ? 0 : $.now();
+            last_timestap = is_resize ? 0 : $.now( );
+
             // invoke the function
-            do_the_callback();
+            do_the_callback( );
         }
 
-        var that;                       // pointer for scoped context
-        var args;                       // pointer for scoped arguments
-        var result;                     // pointer for returned value of function
-        var timeout = null;             // window Timeout reference
-        var last_timestap = 0;          // date int
+        var that; // pointer for scoped context
+        var args; // pointer for scoped arguments
+        var result; // pointer for returned value of function
+        var timeout = null; // window Timeout reference
+        var last_timestap = 0; // date int
 
-        return function bottle_neck(/*arguments*/)
+        return function bottle_neck( /*arguments*/ )
         {
             // set current timestamp
-            var now = $.now();
+            var now = $.now( );
             var remaining;
 
-            if ( ! last_timestap && is_resize )
+            if ( !last_timestap && is_resize )
             {
                 // set current timestamp
                 last_timestap = now;
@@ -229,7 +235,7 @@
             {
                 clearTimeout( timeout );
                 last_timestap = now;
-                do_the_callback();
+                do_the_callback( );
             }
             // do later
             else if ( !timeout && !is_resize )
@@ -241,16 +247,18 @@
     }
 
     // wrap deferments of invocation around render function
-    function get_scroll_browser_event( timer ){
+    function get_scroll_browser_event( timer )
+    {
         return get_bottlenecked_event( do_render_view, timer );
     }
 
-    function get_resize_browser_event( timer ){
+    function get_resize_browser_event( timer )
+    {
         return get_bottlenecked_event( do_render_view, timer, true );
     }
 
     // plugin constants
-    var $el_scrollable = $(window);
+    var $el_scrollable = $( window );
     // the private resize event namespace
     var resize_event_name = 'resize.holdup';
     // the private scroll event namespace
@@ -268,7 +276,7 @@
     /* Holdup CONSTRUCTOR */
     // @param element : DOMElement
     // @param options : { options }
-    var Holdup = function( element, options )
+    var Holdup = function ( element, options )
     {
         var that = this;
         // define this instance's set of options
@@ -277,7 +285,7 @@
         // save reference to element
         that.$el = $( element )
             // add base className & add waiting state className
-            .addClass( these_options.baseClass+' '+pending_classname )
+            .addClass( these_options.baseClass + ' ' + pending_classname )
             // and placeholder img
             .prop( 'src', these_options.placeholder )
             ;
@@ -286,30 +294,30 @@
         that.isloaded = false;
 
         // do instance show
-        that.observe();
-        that.render();
+        that.observe( );
+        that.render( );
     };
 
     // public methods
     var HoldupProto = Holdup.prototype;
 
     // PURPOSE: force show a specific element
-    HoldupProto.show = function()
+    HoldupProto.show = function ( )
     {
-        do_load_image(this.$el, this.options);
+        do_load_image( this.$el, this.options );
     };
 
-    HoldupProto.render = function()
+    HoldupProto.render = function ( )
     {
         // proceed if element is visible and not loaded
-        if (!this.isloaded && is_element_in_view($el_scrollable, this.$el, this.options.threshold) )
+        if ( !this.isloaded && is_element_in_view( $el_scrollable, this.$el, this.options.threshold ) )
         {
-            this.show();
+            this.show( );
         }
     };
 
     // PURPOSE: add plugin window events
-    HoldupProto.observe = function()
+    HoldupProto.observe = function ( )
     {
         // avoids binding events too much
         if ( !is_initialized )
@@ -325,7 +333,7 @@
     };
 
     // PURPOSE: remove plugin window events
-    HoldupProto.ignore = function()
+    HoldupProto.ignore = function ( )
     {
         // unbind
         $el_scrollable
@@ -365,9 +373,9 @@
     };
 
     // assign to {$.fn} namespace
-    $.fn.holdup = function( option )
+    $.fn.holdup = function ( option )
     {
-        return this.each(function do_init()
+        return this.each( function do_init( )
         {
             var $this = $( this );
             var data = $this.data( 'holdup' );
@@ -380,11 +388,11 @@
             }
 
             // execute instance method
-            if ( type === 'string' && data[option] )
+            if ( type === 'string' && data[ option ] )
             {
-                data[option]();
+                data[ option ]( );
             }
-        });
+        } );
     };
 
     // set access to the plugin constructor to expose defaults and potentially allow DEFAULTS override...
@@ -396,13 +404,13 @@
         var original_holdup = $.fn.holdup.noConflict()      // return $.fn.holdup to previously assigned value
         $.fn.someOtherNamespace = original_holdup           // give $().someOtherNamespace the yoholdup functionality
     */
-    $.fn.holdup.noConflict = function()
+    $.fn.holdup.noConflict = function ( )
     {
         $.fn.holdup = old;
         return this;
     };
 
     // return back the plugin namespace
-    return $.fn.holdup;
+    return $;
 
 }));
