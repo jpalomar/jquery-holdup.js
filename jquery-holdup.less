@@ -1,0 +1,42 @@
+
+//
+//      a guideline of default selectors with its modified states
+//  /////////////////////////////////////////////////////////////
+//
+
+// base block class
+.heldup
+{
+    // some reset...
+    border: 0;
+    max-width: 100%;
+
+    // fancy effect
+    -webkit-transition-timing-function: ease-in-out;
+            transition-timing-function: ease-in-out;
+    -webkit-transition-duration: .3s;
+            transition-duration: .3s;
+    -webkit-transition-property: opacity, -webkit-transform;
+            transition-property: opacity, transform;
+    -webkit-transform: scale(.8);
+            transform: scale(.8);
+    opacity: 0;
+    // END fancy effect
+
+    // block modifier - onSuccess state
+    &.heldup-success
+    {
+        // fancy effect
+        -webkit-transform: scale(1);
+                transform: scale(1);
+        opacity: 1;             // SHOW
+        // END fancy effect
+    }
+
+    // block modifier - onError state
+    &.heldup-error
+    {
+        // some rule if loaded image fails
+    }
+
+}
