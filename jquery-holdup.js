@@ -310,7 +310,7 @@
     HoldupProto.render = function ( )
     {
         // proceed if element is visible and not loaded
-        if ( !this.isloaded && is_element_in_view( $el_scrollable, this.$el, this.options.threshold ) )
+        if ( !this.isloaded && this.$el.is(':visible') && is_element_in_view( $el_scrollable, this.$el, this.options.threshold ) )
         {
             this.show( );
         }
