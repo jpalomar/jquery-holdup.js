@@ -2,7 +2,10 @@
   "name": "jquery-holdup.js",
   "version": "0.2.1",
   "description": "yo, holdup -- another image lazy loader? yup.",
-  "main": "jquery-holdup-min.js",
+  "main": [
+    "jquery-holdup.js",
+    "jquery-holdup.css"
+  ],
   "scripts": {
     "test": "npm test"
   },
