@@ -55,13 +55,13 @@
                 // that require this pattern but the window provided is a noop
                 // if it's defined (how jquery works)
                 if ( typeof window !== 'undefined' ) {
-                    jQuery = require('jquery');
+                    jQuery = require( 'jquery' );
                 }
                 else {
-                    jQuery = require('jquery')(root);
+                    jQuery = require( 'jquery' )( root );
                 }
             }
-            factory(jQuery);
+            factory( jQuery );
             return jQuery;
         };
     }
