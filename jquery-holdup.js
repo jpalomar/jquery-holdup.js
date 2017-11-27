@@ -45,7 +45,7 @@
         // AMD. Register as an anonymous module.
         define( ['jquery'], factory );
     }
-    else if (typeof module === 'object' && module.exports)
+    else if ( typeof module === 'object' && module.exports )
     {
         // Node/CommonJS
         module.exports = function( root, jQuery ) {
