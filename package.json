@@ -1,0 +1,26 @@
+{
+  "name": "jquery-holdup.js",
+  "version": "0.2.1",
+  "description": "yo, holdup -- another image lazy loader? yup.",
+  "main": "jquery-holdup-min.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jpalomar/jquery-holdup.js.git"
+  },
+  "keywords": [
+    "image",
+    "lazy",
+    "load",
+    "jquery",
+    "plugin"
+  ],
+  "author": "JR <jr@macremefraiche.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jpalomar/jquery-holdup.js/issues"
+  },
+  "homepage": "https://github.com/jpalomar/jquery-holdup.js#readme"
+}
